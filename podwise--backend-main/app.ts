@@ -20,25 +20,27 @@ const app = express();
 // app.set("trust proxy", 1);
 
 // ===== CORS (allow a small whitelist of dev origins) =====
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-const allowedOrigins = [
-  CLIENT_ORIGIN,
-  "http://localhost:8080",
-];
+// const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
+// const allowedOrigins = [
+//   CLIENT_ORIGIN,
+//   "http://localhost:8080",
+// ];
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error(`Not allowed by CORS: ${origin}`));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// app.use(
+//   cors({
+//     origin(origin, callback) {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       }
+//       return callback(new Error(`Not allowed by CORS: ${origin}`));
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
+
+app.use(cors());
 
 // (Optional but nice for uptime checks)
 app.get("/health", (_req, res) => res.json({ ok: true }));
