@@ -25,29 +25,38 @@ router.post("/signup", async (req, res) => {
     const users = db.collection<User>("users");
 
     const existingUser = await users.findOne({ email });
-    if (existingUser) {
+    if (existingUser)
       return res.status(400).json({ error: "Email already exists" });
-    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser: User = {
       name,
       email,
-      password: hashedPassword,
-      createdAt: new Date(),
+      password: hashedPassword, // keep field name consistent: "password"
+      createdAt: new Date().toISOString(),
     };
 
     const result = await users.insertOne(newUser);
 
-    // Save user info in session
-    req.session.user = {
-      id: result.insertedId.toString(),
-      email,
-      name,
-    };
-
-    res.status(201).json({ message: "Signup successful", user: req.session.user });
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("Session regenerate error:", err);
+        return res.status(500).json({ error: "Session error" });
+      }
+      req.session.user = {
+        id: result.insertedId.toString(),
+        email,
+        name,
+      };
+      req.session.save((err2) => {
+        if (err2)
+          return res.status(500).json({ error: "Could not create session" });
+        res
+          .status(201)
+          .json({ message: "Signup successful", user: req.session.user });
+      });
+    });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).json({ error: "Server error" });
@@ -62,25 +71,37 @@ router.post("/signin", async (req, res) => {
     const users = db.collection<User>("users");
 
     const user = await users.findOne({ email });
-    if (!user) return res.status(400).json({ error: "Invalid credentials" });
+    if (!user || typeof user.password !== "string") {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    // Save in session
-    req.session.user = {
-      id: user._id?.toString() || "",
-      email: user.email,
-      name: user.name,
-    };
-
-    res.json({ message: "Signin successful", user: req.session.user });
+    // Regenerate session, then persist user and save before responding
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("Session regenerate error:", err);
+        return res.status(500).json({ error: "Session error" });
+      }
+      req.session.user = {
+        id: user._id?.toString() || "",
+        email: user.email ?? "",
+        name: user.name ?? "",
+      };
+      req.session.save((err2) => {
+        if (err2) {
+          console.error("Session save error:", err2);
+          return res.status(500).json({ error: "Could not create session" });
+        }
+        res.json({ message: "Signin successful", user: req.session.user });
+      });
+    });
   } catch (error) {
     console.error("Signin error:", error);
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 // Sign Out
 router.post("/signout", (req, res) => {

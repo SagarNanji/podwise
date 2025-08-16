@@ -8,12 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Save, ShieldCheck, KeyRound, User2 } from "lucide-react";
 
+import type { User } from "@/types/user";
+
 const API = import.meta.env.VITE_API_BASE || "http://localhost:7001";
 
 export default function Profile() {
   // profile fields
   const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState(""); 
+  const [email, setEmail] = React.useState(""); // read-only
   const [company, setCompany] = React.useState("");
   const [title, setTitle] = React.useState("");
   const [bio, setBio] = React.useState("");
@@ -23,6 +25,7 @@ export default function Profile() {
   const [newPassword, setNewPassword] = React.useState("");
   const [confirm, setConfirm] = React.useState("");
 
+  // UX
   const [loading, setLoading] = React.useState(true);
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [savingPass, setSavingPass] = React.useState(false);
@@ -31,25 +34,33 @@ export default function Profile() {
 
   // load current profile
   React.useEffect(() => {
+    const ac = new AbortController();
     (async () => {
       setLoading(true);
       setErr(null);
       try {
-        const r = await fetch(`${API}/api/profile`, { credentials: "include" });
+        const r = await fetch(`${API}/api/profile`, {
+          credentials: "include",
+          signal: ac.signal,
+        });
         const data = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(data?.message || "Failed to load profile");
-        const u = data.user || {};
-        setName(u.name || "");
+
+        const u: Partial<User> = data.user || {};
+        setName(u.name || "");         // <-- fix here
         setEmail(u.email || "");
         setCompany(u.company || "");
         setTitle(u.title || "");
         setBio(u.bio || "");
-      } catch (e: any) {
-        setErr(e.message || "Error loading profile");
+      } catch (e: unknown) {
+        if ((e as any)?.name !== "AbortError") {
+          setErr((e as Error).message || "Error loading profile");
+        }
       } finally {
         setLoading(false);
       }
     })();
+    return () => ac.abort();
   }, []);
 
   const saveProfile = async (e: React.FormEvent) => {
@@ -67,8 +78,8 @@ export default function Profile() {
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data?.message || "Failed to save profile");
       setMsg("Profile updated successfully.");
-    } catch (e: any) {
-      setErr(e.message || "Failed to save profile");
+    } catch (e: unknown) {
+      setErr((e as Error).message || "Failed to save profile");
     } finally {
       setSavingProfile(false);
     }
@@ -95,8 +106,8 @@ export default function Profile() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirm("");
-    } catch (e: any) {
-      setErr(e.message || "Failed to change password");
+    } catch (e: unknown) {
+      setErr((e as Error).message || "Failed to change password");
     } finally {
       setSavingPass(false);
     }
@@ -113,12 +124,12 @@ export default function Profile() {
         </div>
 
         {msg && (
-          <div className="rounded-lg border border-green-600/30 bg-green-600/10 px-3 py-2 text-green-300 text-sm">
+          <div className="rounded-lg border border-green-600/30 bg-green-600/10 px-3 py-2 text-green-300 text-sm" role="status" aria-live="polite">
             {msg}
           </div>
         )}
         {err && (
-          <div className="rounded-lg border border-red-600/30 bg-red-600/10 px-3 py-2 text-red-300 text-sm">
+          <div className="rounded-lg border border-red-600/30 bg-red-600/10 px-3 py-2 text-red-300 text-sm" role="alert">
             {err}
           </div>
         )}

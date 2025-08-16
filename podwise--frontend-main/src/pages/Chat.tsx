@@ -5,10 +5,10 @@ import Footer from "@/components/Footer";
 import { ChatInterface } from "@/components/ChatInterface";
 
 const ChatPage: React.FC = () => {
-  // This param is the SESSION id, not the chatId
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
 
+  // If the URL is malformed, send them back
   if (!sessionId) {
     navigate("/index");
     return null;
@@ -26,3 +26,4 @@ const ChatPage: React.FC = () => {
 };
 
 export default ChatPage;
+

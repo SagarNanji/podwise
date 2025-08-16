@@ -55,8 +55,8 @@ export default function About() {
 
       setSuccess("Thanks! Your message has been sent. We’ll get back to you soon.");
       setName(""); setEmail(""); setSubject(""); setCategory("support"); setMessage(""); setAgree(false);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -98,6 +98,10 @@ export default function About() {
               Podwise helps you turn audio into searchable conversations. Upload a meeting, lecture,
               or interview and get an accurate transcript, smart summaries, and a chat interface to
               pull the exact answers you need—complete with timestamps.
+            </p>
+            <p>
+              Built with Vite + React + TypeScript on the front end and Node/Express + MongoDB on
+              the back end, Podwise is designed for speed, clarity, and a clean UX.
             </p>
           </CardContent>
         </Card>
@@ -142,6 +146,7 @@ export default function About() {
           </Card>
         </div>
 
+        {/* 2-column layout on desktop: Contact + Form */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Contact Details */}
           <Card className="shadow-sm lg:col-span-1">
@@ -151,7 +156,7 @@ export default function About() {
             <CardContent className="space-y-4 page-text">
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
-                <a className="underline" href="mailto:support@podwise.example">support@podwise.com</a>
+                <a className="underline" href="mailto:support@podwise.example">support@podwise.example</a>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4" />
@@ -159,7 +164,7 @@ export default function About() {
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="h-4 w-4" />
-                <span>123 Kitchener, Ontario</span>
+                <span>123 Maker Way, Kitchener, ON</span>
               </div>
 
               <div className="mt-4 rounded-lg border border-[var(--border)] p-3 text-sm text-muted-foreground">
@@ -179,6 +184,7 @@ export default function About() {
               <CardTitle className="page-title">Send us a message</CardTitle>
             </CardHeader>
             <CardContent>
+              {/* feedback banners */}
               {success && (
                 <div className="mb-4 flex items-center gap-2 rounded-lg border border-green-600/30 bg-green-600/10 px-3 py-2 text-green-300">
                   <CheckCircle2 className="h-4 w-4" />
@@ -192,9 +198,8 @@ export default function About() {
                 </div>
               )}
 
-              // Contact form
               <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+                {/* Name */}
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
@@ -207,6 +212,7 @@ export default function About() {
                   />
                 </div>
 
+                {/* Email */}
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -220,6 +226,7 @@ export default function About() {
                   />
                 </div>
 
+                {/* Subject */}
                 <div className="flex flex-col gap-2 md:col-span-2">
                   <Label htmlFor="subject">Subject</Label>
                   <Input
@@ -231,13 +238,14 @@ export default function About() {
                   />
                 </div>
 
+                {/* Category */}
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="category">Category</Label>
                   <select
                     id="category"
                     className="auth-input"
                     value={category}
-                    onChange={(e) => setCategory(e.target.value as any)}
+                    onChange={(e) => setCategory(e.target.value as "support" | "billing" | "feedback" | "other")}
                   >
                     <option value="support">Support</option>
                     <option value="billing">Billing</option>
@@ -246,6 +254,7 @@ export default function About() {
                   </select>
                 </div>
 
+                {/* Message */}
                 <div className="flex flex-col gap-2 md:col-span-2">
                   <Label htmlFor="message">Message</Label>
                   <Textarea
@@ -258,6 +267,7 @@ export default function About() {
                   />
                 </div>
 
+                {/* Consent */}
                 <div className="md:col-span-2 flex items-start gap-2 text-sm text-muted-foreground">
                   <input
                     id="agree"
@@ -272,6 +282,7 @@ export default function About() {
                   </label>
                 </div>
 
+                {/* Submit */}
                 <div className="md:col-span-2">
                   <Button
                     type="submit"
@@ -285,7 +296,7 @@ export default function About() {
               </form>
 
               <p className="mt-4 text-xs text-muted-foreground">
-                Need immediate help? Email <a className="underline" href="mailto:support@podwise.example">support@podwise.com</a>.
+                Need immediate help? Email <a className="underline" href="mailto:support@podwise.example">support@podwise.example</a>.
               </p>
             </CardContent>
           </Card>

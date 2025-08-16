@@ -17,8 +17,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--page-bg)] text-[var(--text)]">
+      {/* Top navigation */}
       <Header />
 
+      {/* Main content */}
       <main className="container mx-auto flex-1 px-4 py-6">
         {sessionId ? (
           <ChatInterface sessionId={sessionId} onBack={handleBack} />
@@ -27,6 +29,7 @@ const Index = () => {
         )}
       </main>
 
+      {/* Global footer */}
       <Footer />
     </div>
   );

@@ -6,6 +6,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, MessageSquare } from "lucide-react";
 
+import { Message } from "@/types/message";
+
 const API = import.meta.env.VITE_API_BASE || "http://localhost:7001";
 
 type SessionItem = {
@@ -22,9 +24,7 @@ export default function ChatHistory() {
   const [error, setError] = React.useState<string | null>(null);
   const [items, setItems] = React.useState<SessionItem[]>([]);
   const [selected, setSelected] = React.useState<SessionItem | null>(null);
-  const [messages, setMessages] = React.useState<
-    { sender: "user" | "bot"; content: string; timestamp: string }[]
-  >([]);
+  const [messages, setMessages] = React.useState<Message[]>([]);
   const navigate = useNavigate();
 
   const fetchList = async () => {
@@ -35,8 +35,8 @@ export default function ChatHistory() {
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data?.message || `Failed: ${r.status}`);
       setItems(data.sessions || []);
-    } catch (e: any) {
-      setError(e.message || "Failed to load history");
+    } catch (e: unknown) {
+      setError((e as Error).message || "Failed to load history");
     } finally {
       setLoading(false);
     }
@@ -49,14 +49,14 @@ export default function ChatHistory() {
       const r = await fetch(`${API}/api/history/chats/${s._id}`, { credentials: "include" });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data?.message || `Failed: ${r.status}`);
-      const msgs = (data.chat?.messages || []).map((m: any) => ({
+      const msgs = (data.chat?.messages || []).map((m: Message) => ({
         sender: m.sender,
         content: m.content,
         timestamp: m.timestamp,
       }));
       setMessages(msgs);
-    } catch (e: any) {
-      setError(e.message || "Failed to load chat");
+    } catch (e: unknown) {
+      setError((e as Error).message || "Failed to load chat");
     }
   };
 

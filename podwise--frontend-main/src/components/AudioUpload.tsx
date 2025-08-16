@@ -26,22 +26,7 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({ onSessionCreated }) =>
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const files = Array.from(e.dataTransfer.files);
-    const audioFile = files.find(file => file.type.startsWith('audio/'));
-    if (audioFile) uploadFile(audioFile);
-  }, []);
-
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('audio/')) {
-      uploadFile(file);
-    }
-  }, []);
-
-  const uploadFile = async (file: File) => {
+  const uploadFile = useCallback(async (file: File) => {
     setIsUploading(true);
     setUploadProgress(0);
 
@@ -70,7 +55,7 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({ onSessionCreated }) =>
       if (!res.ok) {
         // try to parse server message
         let msg = '';
-        try { msg = await res.text(); } catch {}
+        try { msg = await res.text(); } catch (e) { console.error(e) }
         if (res.status === 401) {
           throw new Error('You must be signed in before uploading.');
         }
@@ -87,15 +72,34 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({ onSessionCreated }) =>
           throw new Error("Session ID not returned from server.");
         }
       }, 300);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Upload error:', error);
-      alert(error?.message || 'File upload failed. Please try again.');
+      alert(
+        typeof error === 'object' && error !== null && 'message' in error
+          ? (error as { message: string }).message
+          : 'File upload failed. Please try again.'
+      );
       setUploadProgress(0);
     } finally {
       setIsUploading(false);
       clearInterval(interval);
     }
-  };
+  }, [onSessionCreated, endpoint]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    const audioFile = files.find(file => file.type.startsWith('audio/'));
+    if (audioFile) uploadFile(audioFile);
+  }, [uploadFile]);
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('audio/')) {
+      uploadFile(file);
+    }
+  }, [uploadFile]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-6">

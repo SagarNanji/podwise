@@ -1,27 +1,27 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import tailwind from "@tailwindcss/postcss";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
-import tailwind from "@tailwindcss/postcss"; // Tailwind v4 PostCSS plugin
+import { fileURLToPath } from "url";
 
-export default defineConfig(({ mode }) => ({
-  server: {
-    host: "0.0.0.0",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-  ].filter(Boolean),
+// ESM replacements for __filename/__dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "src"),
     },
   },
   css: {
-    // Inline PostCSS so we don't need a postcss.config.* file
     postcss: {
       plugins: [tailwind()],
     },
   },
-}));
+  server: {
+    host: "::",
+    port: 8080,
+  },
+});

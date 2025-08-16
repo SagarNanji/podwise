@@ -1,19 +1,20 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { User } from "@/types/user";
 
 interface AuthContextType {
-  user: any | null;
-  login: (userData: any) => void;
+  user: User | null;
+  login: (userData: User) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { signOut } = useAuth();
 
-  const login = (userData: any) => setUser(userData);
+  const login = (userData: User) => setUser(userData);
   const logout = async () => {
     await signOut();
     setUser(null);

@@ -81,8 +81,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ sessionId, onBack 
       // Create an error message to display in the chat UI.
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
+        // You can customize this message or add a special 'error' flag.
         content: "Sorry, I couldn't connect to the server. Please try again.",
-        isUser: false, 
+        isUser: false, // Display it as a system/bot message.
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);

@@ -16,8 +16,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 // Pages
 import ChatHistory from "@/pages/ChatHistory";
 import About from "@/pages/About";
-import ChatPage from "@/pages/chat";
-import Profile from "@/pages/Profile";
+import ChatPage from "@/pages/Chat";
+import Profile from "@/pages/Profile"; // ⬅️ NEW: profile page
 
 const queryClient = new QueryClient();
 
@@ -47,6 +47,12 @@ const App = () => (
               }
             />
             <Route
+              path="/chat"
+              element={
+                <ChatPage />
+              }
+            />
+            <Route
               path="/chat/:sessionId"
               element={
                 <ProtectedRoute>
@@ -69,6 +75,7 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/about" element={<About />} />
 
+            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

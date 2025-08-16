@@ -1,16 +1,18 @@
 import React, { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuthContext } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useAuth } from "@/hooks/useAuth";
-import { useAuthContext } from "@/context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, LogIn } from "lucide-react";
+import { Mail, Lock, LogIn, Loader2 } from "lucide-react";
 
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { loading, error, signIn } = useAuth();
   const { login } = useAuthContext();
+  const { loading, error, signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,74 +25,114 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
-      <main className="flex-1 py-12">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur">
-            <div className="mb-6 text-center">
-              <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
-              <p className="mt-1 text-sm text-slate-400">
-                Welcome back — please enter your credentials.
-              </p>
-            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <label className="block">
-                <span className="mb-1 block text-sm text-slate-300">Email</span>
-                <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
-                  <Mail className="h-4 w-4 text-slate-400" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent text-sm outline-none placeholder:text-slate-500"
-                    placeholder="you@example.com"
-                  />
-                </div>
-              </label>
-
-              <label className="block">
-                <span className="mb-1 block text-sm text-slate-300">Password</span>
-                <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2">
-                  <Lock className="h-4 w-4 text-slate-400" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-transparent text-sm outline-none placeholder:text-slate-500"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </label>
-
-              {error && (
-                <div className="rounded-lg border border-rose-700/50 bg-rose-900/30 px-3 py-2 text-sm text-rose-200">
-                  {String(error)}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white hover:opacity-90 disabled:opacity-50"
-              >
-                <LogIn className="h-4 w-4" />
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
-            </form>
-
-            <p className="mt-4 text-center text-sm text-slate-400">
-              Don’t have an account?{" "}
-              <Link to="/signup" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
-                Sign up
-              </Link>
+      <main className="flex-1 grid place-items-center px-4 py-10">
+        <div
+          className="
+            w-full max-w-md rounded-2xl border border-border
+            bg-card text-card-foreground shadow-xl
+            p-6 sm:p-8
+          "
+        >
+          <div className="mb-6 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Welcome back
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Sign in to your account to continue
             </p>
           </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            {/* Email */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
+
+              <div className="">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-11 pl-10 sm:pl-11"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
+
+              <div className="">
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="h-11 pl-10 sm:pl-11"
+                />
+              </div>
+            </div>
+
+            {/* Error message */}
+            {error && (
+              <p
+                className="text-sm text-destructive"
+                role="alert"
+                aria-live="polite"
+              >
+                {error}
+              </p>
+            )}
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="
+                h-11 w-full inline-flex items-center justify-center gap-2
+                bg-primary text-primary-foreground
+                hover:opacity-95
+              "
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  Signing in…
+                </>
+              ) : (
+                <>
+                  <LogIn size={18} />
+                  Sign In
+                </>
+              )}
+            </Button>
+          </form>
+
+          <p className="text-center mt-4 text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-primary underline underline-offset-4 hover:no-underline"
+            >
+              Sign up
+            </Link>
+          </p>
         </div>
       </main>
+
       <Footer />
     </div>
   );
