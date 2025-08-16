@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+/* HSL tokens only */
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 263 70% 50%;
+  --primary-foreground: 0 0% 98%;
+  --primary-glow: 263 70% 65%;
+
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 263 70% 50%;
+
+  /* Audio-themed */
+  --audio-primary: 263 70% 50%;
+  --audio-secondary: 280 100% 70%;
+  --audio-warm: 45 100% 70%;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(263 70% 50%), hsl(280 100% 70%));
+  --gradient-warm: linear-gradient(135deg, hsl(263 70% 50%), hsl(45 100% 70%));
+  --gradient-subtle: linear-gradient(135deg, hsl(263 70% 50%), hsl(280 100% 70%));
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px hsl(var(--audio-primary) / 0.3);
+  --shadow-warm: 0 0 20px hsl(var(--audio-warm) / 0.3);
+
+  /* Sidebar */
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+/* Base */
+*, ::before, ::after { border-color: hsl(var(--border)); }
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
